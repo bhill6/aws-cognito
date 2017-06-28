@@ -1,2 +1,1 @@
-# aws-cognito
-AWS AuthZ, AuthN with Cognito, API Gateway and UW SAML IP
+## [For now, please use the wiki](https://github.com/UWFosterIT/aws-cognito/wiki)
