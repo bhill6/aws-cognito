@@ -108,37 +108,6 @@
       });
     }
 
-    function getAWSCredentials() {
-      var session = auth.getSignInUserSession();
-      if (session != null) {
-        var idToken = session.getIdToken().getJwtToken();
-        var login = 'cognito-idp.' + config.userPoolRegion + '.amazonaws.com/' + config.userPoolId;
-
-        var tokenPayload = idToken.split('.')[1];
-        var tokenFormatted = JSON.parse(atob(tokenPayload));
-        var subId = tokenFormatted.sub;
-        subId = '03a88396-e2a3-40d0-9902-67d32e3e3237';
-
-        AWS.config.region = config.userPoolRegion;
-        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-          IdentityPoolId: config.userPoolRegion + ':' + subId,
-          Logins: {
-            login: idToken
-          }
-        });
-
-        AWS.config.credentials.get(function(error) {
-          if (error) {
-            console.log('AWS Credentials Error', error);
-          } else {
-            console.log('AWS Credentials', AWS.config.credentials);
-          }
-        });
-      } else {
-        console.error('No active Cognito session');
-      }
-    }
-
     window.onload = function authorize() {
       auth = initCognitoSDK();
       var curUrl = window.location.href;
@@ -174,10 +143,6 @@
   <input type="text" id="apiGatewayEndpoint" size="100"></input>
   <a href="javascript:void(0)" onclick="apiGateway();">Call API</a>
 
-  <h3>AWS SDK S3 Bucket Contents</h3>
-  Enter a bucket that this user has access to.  Simply attach an IAM role to a Cognito group that the logged in user is a member of.</br>
-  <input type="text" id="sdkS3Bucket"></input>
-  <a href="javascript:void(0)" onclick="getAWSCredentials();">Make AWS SDK Request</a>
   </div>
 </body>
 </html>
