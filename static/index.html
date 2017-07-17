@@ -24,68 +24,68 @@
 
     function initCognitoSDK() {
       var authData = {
-      	ClientId : config.clientId,
-      	AppWebDomain : config.domain,
-      	TokenScopesArray : ['openid', 'profile', 'email', 'phone'],
-      	RedirectUriSignIn : config.signinRedirect,
-      	RedirectUriSignOut : 'https://google.com'
+        ClientId: config.clientId,
+        AppWebDomain: config.domain,
+        TokenScopesArray: ['openid', 'profile', 'email', 'phone'],
+        RedirectUriSignIn: config.signinRedirect,
+        RedirectUriSignOut: 'https://google.com'
       };
 
       var auth = new AWSCognito.CognitoIdentityServiceProvider.CognitoAuth(authData);
 
       auth.userhandler = {
-      	onSuccess: function(result) {
+        onSuccess: function(result) {
           console.log('Sign in success', result);
-      	},
-      	onFailure: function(error) {
+        },
+        onFailure: function(error) {
           console.error('Sign in error', error);
-      	}
+        }
       };
 
-		  // The default response_type is "token", uncomment the next line to make it be "code" instead.
-		  // auth.useCodeGrantFlow();
+      // The default response_type is "token", uncomment the next line to make it be "code" instead.
+      // auth.useCodeGrantFlow();
       return auth;
     }
 
     // Perform user operations.
-	  function login() {
-	  	var state = $('#loginLink').innerHTML;
-	  	if (state === "Sign Out") {
+    function login() {
+      var state = $('#loginLink').innerHTML;
+      if (state === "Sign Out") {
         $('loginLink').innerHTML = "Sign In";
-	  		auth.signOut();
-	  		clearTokens();
-	  	} else {
-	  		auth.getSession();
-	  	}
-	  }
+        auth.signOut();
+        clearTokens();
+      } else {
+        auth.getSession();
+      }
+    }
 
     function currentSession() {
       var session = auth.getSignInUserSession();
 
       // the actual user
-	  	var idToken = session.getIdToken().getJwtToken();
-	  	if (idToken) {
-	  		var payload = idToken.split('.')[1];
-	  		var formatted = JSON.parse(atob(payload));
+      var idToken = session.getIdToken().getJwtToken();
+      if (idToken) {
+        var payload = idToken.split('.')[1];
+        var formatted = JSON.parse(atob(payload));
         console.log('Id Token Info', formatted);
       }
 
-	  	var accessToken = session.getAccessToken().getJwtToken();
-	  	if (accessToken) {
-	  		var payload = accessToken.split('.')[1];
-	  		var formatted = JSON.parse(atob(payload));
+      var accessToken = session.getAccessToken().getJwtToken();
+      if (accessToken) {
+        var payload = accessToken.split('.')[1];
+        var formatted = JSON.parse(atob(payload));
         console.log('Access Token Info', formatted);
       }
 
-	  	var refreshToken = session.getRefreshToken().getToken();
-	  	if (refreshToken) {
-	  		var payload = refreshToken.split('.')[1];
-	  		var formatted = JSON.parse(atob(payload));
+      var refreshToken = session.getRefreshToken().getToken();
+      if (refreshToken) {
+        var payload = refreshToken.split('.')[1];
+        var formatted = JSON.parse(atob(payload));
         console.log('Refresh Token Info', formatted);
       }
     }
 
-    function apiGateway(){
+    function apiGateway() {
       var cognitoUser = auth.getSignInUserSession();
       var token = cognitoUser.idToken.jwtToken;
 
@@ -111,8 +111,8 @@
     function getAWSCredentials() {
       var session = auth.getSignInUserSession();
       if (session != null) {
-	  	  var idToken = session.getIdToken().getJwtToken();
-        var login = 'cognito-idp.'+config.userPoolRegion+'.amazonaws.com/'+config.userPoolId;
+        var idToken = session.getIdToken().getJwtToken();
+        var login = 'cognito-idp.' + config.userPoolRegion + '.amazonaws.com/' + config.userPoolId;
 
         var tokenPayload = idToken.split('.')[1];
         var tokenFormatted = JSON.parse(atob(tokenPayload));
@@ -122,7 +122,9 @@
         AWS.config.region = config.userPoolRegion;
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
           IdentityPoolId: config.userPoolRegion + ':' + subId,
-          Logins: {login: idToken}
+          Logins: {
+            login: idToken
+          }
         });
 
         AWS.config.credentials.get(function(error) {
@@ -138,9 +140,9 @@
     }
 
     window.onload = function authorize() {
-    	auth = initCognitoSDK();
-		  var curUrl = window.location.href;
-    	auth.parseCognitoWebResponse(curUrl);
+      auth = initCognitoSDK();
+      var curUrl = window.location.href;
+      auth.parseCognitoWebResponse(curUrl);
     }
   </script>
 </head>
